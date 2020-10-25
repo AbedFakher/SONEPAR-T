@@ -1,0 +1,108 @@
+openapi: 3.0.0
+info:
+  title: BISKOT API
+  description: .
+  version: 0.0.1
+paths:
+  /carts:
+    post:
+      tags:
+        - Cart
+      summary: Create a cart.
+      operationId: createCart
+      responses:
+        '200':
+          description: Cart initialized
+  /carts/{cartId}:
+    get:
+      tags:
+        - Cart
+      summary: Retrieve a cart
+      operationId: getCart
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cart retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '404':
+          description: Cart not found
+  /carts/{cartId}/items:
+    put:
+      tags:
+        - Cart
+      summary: Add/update items in the cart.
+      operationId: addItemToCart
+      responses:
+        '200':
+          description: Item added
+        '400':
+          description: Business rules have not been respected
+        '404':
+          description: Cart or product not found
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddItemRequest'
+      parameters:
+        - name: cartId
+          in: path
+          description: Cart ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+components:
+  schemas:
+    CartResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemResponse'
+        totalPrice:
+          type: number
+          format: double
+    ItemResponse:
+      type: object
+      properties:
+        product_id:
+          type: integer
+          format: int64
+        product_label:
+          type: string
+        quantity:
+          type: integer
+        unit_price:
+          type: number
+          format: double
+        line_price:
+          type: number
+          format: double
+    AddItemRequest:
+      type: object
+      properties:
+        product_id:
+          description: id of product to add
+          type: integer
+          format: int64
+          example: 3
+        quantity:
+          description: quantity to add, or updated quantity in case of existing product in cart
+          type: integer
+          example: 2
